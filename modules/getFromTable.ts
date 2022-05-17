@@ -1,4 +1,5 @@
 import { Database } from "./Database";
+import { ICustomer } from "../interfaces/ICustomer";
 
 export class GetFromTable extends Database {
 
@@ -17,5 +18,21 @@ export class GetFromTable extends Database {
     }
 
     return rows;
+  }
+
+  create(params: ICustomer) {
+
+    const { name, lastName, cpf, acountManager, acountType, agency, birthDate} = params;
+
+    const data = [name, lastName, birthDate ,cpf, acountType, acountManager, agency];
+
+    return this.command(`INSERT INTO customer (name, lastName, birthDate, cpf, acountType, acountManager, agency) VALUES (?, ?, ?, ?, ?, ?, ?);`, data);
+  };
+
+  async delete(table: string, userId: number) {
+
+    await this.getById(table, userId);
+
+    return this.command(`DELETE FROM ${table} WHERE id = ?;`, [userId]);
   }
 }

@@ -1,7 +1,10 @@
 import express, { Express, Request, Response } from "express";
-import { GetFromTable } from "./modules/GetFromTable";
+import { ICustomer } from "./interfaces/ICustomer";
+import { GetFromTable } from "./modules/getFromTable";
 
 const app: Express = express();
+
+app.use(express.urlencoded({ extended: false })); //middleawer
 
 const getFromTable = new GetFromTable();
 
@@ -61,6 +64,55 @@ app.get("/customer/:id", async (req: Request, res: Response) => {
   }
 
 });
+///customers
+//metodo - post
+
+app.post("/customer", async (req: Request, res: Response) => {
+  // 1 - pegar dados do cliente
+  const data = req.body as ICustomer;
+  // 2 - validar os dados
+  if (!data.name) {
+    res.status(400).send("O Nome é obrigatorio");
+  }
+  if (!data.lastName) {
+    res.status(400).send("O Sobre Nome é obrigatorio");
+  }
+  if (!data.cpf) {
+    res.status(400).send("O cpf é obrigatorio");
+  }
+  if (!data.acountManager) {
+    res.status(400).send("O ID do Gerente é obrigatorio");
+  }
+  if (!data.acountType) {
+    res.status(400).send("O tipo de conta é obrigatorio");
+  }
+  if (!data.agency) {
+    res.status(400).send("agencia é obrigatorio");
+  }
+  if (!data.birthDate) {
+    res.status(400).send("A data de nacimento é obrigatorio");
+  }
+  // 3 - Enviar os dados para o banco
+  const [ rows ] = await getFromTable.create(req.body);
+  // 4 - Retornar para o usuario uma mensagem de sucesso ou falha
+  res.json(rows);
+})
+
+app.delete("/customer/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (id) {
+    if (isNaN(Number(id))) {
+      res.status(400).send("ID Invalido");
+    }
+
+    getFromTable.delete("customer", Number(id)).then(() => {
+      res.status(200).send({ result: "Usuario excluido com sucesso!" });
+    }).catch((err) => {
+      res.status(404).send(String(err.message))});
+  }
+
+})
 
 app.get("/agencies", async (req: Request, res: Response) => {
 
