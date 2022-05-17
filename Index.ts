@@ -1,13 +1,9 @@
 import express, { Express, Request, Response } from "express";
-import { Database } from "./modules/Database";
-import { Customer } from "./modules/Customer";
-import { userInfo } from "os";
+import { GetFromTable } from "./modules/GetFromTable";
 
 const app: Express = express();
 
-const db = new Database();
-
-const customer = new Customer();
+const getFromTable = new GetFromTable();
 
 app.get("/", (req: Request, res: Response) => {
 
@@ -17,7 +13,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.get("/accounts", async (req: Request, res: Response) => {
 
-  const [ rows ] = await db.command("SELECT * FROM accounttypes;");
+  const [ rows ] = await getFromTable.list("accounttypes");
   
   res.json(rows);
 });
@@ -27,15 +23,22 @@ app.get("/account/:id", async(req: Request, res: Response) => {
 
   if (id) {
 
-    const [ rows ] = await db.command(`SELECT * FROM accounttypes WHERE id = ?;`, [id]);
+    if (isNaN(Number(id))) {
+      res.status(400).send("ID Invalido")
+    }
 
-    res.json(rows);
+    getFromTable.getById("accounttypes", Number(id))
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.status(404).send("Tipo de conta " + String(err.message))});
   }
 });
 
 app.get("/customers", async (req: Request, res: Response) => {
 
-  const [ rows ] = await  customer.list();
+  const [ rows ] = await getFromTable.list("customer");
   
   res.json(rows);
 
@@ -45,17 +48,23 @@ app.get("/customer/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
   if (id) {
+
+    if (isNaN(Number(id))) {
+      res.status(400).send("ID Invalido");
+    }
+    //duvida linhas 29 a 32 no serve.ts sobre retur e se o res faz a mesma coisa.
   
-    const [ rows ] = await db.command(`SELECT * FROM customer WHERE id = ?;`, [id]);
-  
-    res.json(rows);
+    getFromTable.getById("customer", Number(id)).then((result) => {
+      res.json(result);
+    }).catch((err) => {
+      res.status(404).send("Cliente " + String(err.message))});
   }
 
 });
 
 app.get("/agencies", async (req: Request, res: Response) => {
 
-  const [ rows ] = await db.command("SELECT * FROM agencies;");
+  const [ rows ] = await getFromTable.list("agencies");
 
   res.json(rows);
 });
@@ -66,15 +75,20 @@ app.get("/agencie/:id", async (req: Request, res: Response) => {
 
   if (id) {
 
-    const [ rows ] = await db.command(`SELECT * FROM agencies WHERE id = ?;`, [id]);
+    if (isNaN(Number(id))) {
+      res.status(400).send("ID Invalido");
+    }
 
-    res.json(rows);
+    getFromTable.getById("agencies", Number(id)).then((result) => {
+      res.json(result);
+    }).catch((err) => {
+      res.status(404).send("Agência " + String(err.message))});
   }
 });
 
 app.get("/districts", async (req: Request, res: Response) => {
 
-  const [ rows ] = await db.command("SELECT * FROM district;");
+  const [ rows ] = await getFromTable.list("district");
 
   res.json(rows);
 });
@@ -84,15 +98,20 @@ app.get("/district/:id", async (req: Request, res: Response) => {
 
   if (id) {
 
-    const [ rows ] = await db.command(`SELECT * FROM district WHERE id = ?;`, [id]);
+    if (isNaN(Number(id))) {
+      res.status(400).send("ID Invalido");
+    }
 
-    res.json(rows);
+    getFromTable.getById("district", Number(id)).then((result) => {
+      res.json(result);
+    }).catch((err) => {
+      res.status(404).send("Bairro " + String(err.message))});
   }
 });
 
 app.get("/employees", async (req: Request, res: Response) => {
 
-  const [ rows ] = await db.command("SELECT * FROM employees;");
+  const [ rows ] = await getFromTable.list("employees");
 
   res.json(rows);
 });
@@ -103,15 +122,20 @@ app.get("/employee/:id", async (req: Request, res: Response) => {
 
   if (id) {
 
-    const [ rows ] = await db.command(`SELECT * FROM employees WHERE id = ?;`, [id]);
+    if (isNaN(Number(id))) {
+      res.status(400).send("ID Invalido");
+    }
 
-    res.json(rows);
+    getFromTable.getById("employees", Number(id)).then((result) => {
+      res.json(result);
+    }).catch((err) => {
+      res.status(404).send("Funcionario " + String(err.message))});
   }
 });
 
 app.get("/managers", async (req: Request, res: Response) => {
 
-  const [ rows ] = await db.command("SELECT * FROM managers;");
+  const [ rows ] = await getFromTable.list("managers");
 
   res.json(rows);
 
@@ -123,15 +147,20 @@ app.get("/manager/:id", async (req: Request, res: Response) => {
 
   if (id) {
 
-    const [ rows ] = await db.command(`SELECT * FROM managers WHERE id = ?;`, [id]);
+    if (isNaN(Number(id))) {
+      res.status(400).send("ID Invalido");
+    }
 
-    res.json(rows);
+    getFromTable.getById("managers", Number(id)).then((result) => {
+      res.json(result);
+    }).catch((err) => {
+      res.status(404).send("Gerente " + String(err.message))});
   }
 });
 
 app.get("/rules", async (req: Request, res: Response) => {
 
-  const [ rows ] = await db.command("SELECT * FROM rules;");
+  const [ rows ] = await getFromTable.list("rules");
 
   res.json(rows);
 });
@@ -142,15 +171,20 @@ app.get("/rule/:id", async (req: Request, res: Response) => {
 
   if (id) {
 
-    const [ rows ] = await db.command(`SELECT * FROM rules WHERE id = ?;`, [id]);
+    if (isNaN(Number(id))) {
+      res.status(400).send("ID Invalido");
+    }
 
-    res.json(rows);
+    getFromTable.getById("rules", Number(id)).then((result) => {
+      res.json(result);
+    }).catch((err) => {
+      res.status(404).send("Cargo " + String(err.message))});
   }
 });
 
 app.get("/services", async (req: Request, res: Response) => {
 
-  const [ rows ] = await db.command("SELECT * FROM services;");
+  const [ rows ] = await getFromTable.list("services");
 
   res.json(rows);
 });
@@ -161,15 +195,20 @@ app.get("/service/:id", async (req: Request, res: Response) => {
 
   if (id) {
 
-    const [ rows ] = await db.command(`SELECT * FROM services WHERE id = ?;`, [id]);
+    if (isNaN(Number(id))) {
+      res.status(400).send("ID Invalido");
+    }
 
-    res.json(rows);
+    getFromTable.getById("services", Number(id)).then((result) => {
+      res.json(result);
+    }).catch((err) => {
+      res.status(404).send("Serviço " + String(err.message))});
   }  
 });
 
 app.get("/timetable", async (req: Request, res: Response) => {
 
-  const [ rows ] = await db.command("SELECT * FROM timetable;");
+  const [ rows ] = await getFromTable.list("timetable");
 
   res.json(rows);
 });
@@ -180,9 +219,14 @@ app.get("/timetable/:id", async (req: Request, res: Response) => {
 
   if (id) {
 
-    const [ rows ] = await db.command(`SELECT * FROM timetable WHERE id = ?;`, [id]);
+    if (isNaN(Number(id))) {
+      res.status(400).send("ID Invalido");
+    }
 
-    res.json(rows);
+    getFromTable.getById("timetable", Number(id)).then((result) => {
+      res.json(result);
+    }).catch((err) => {
+      res.status(404).send("Turno " + String(err.message))});
   }
 
 });

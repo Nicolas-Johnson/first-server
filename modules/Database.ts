@@ -1,8 +1,7 @@
 import mysql from "mysql2/promise";
-// import mysql from "mysql2/primise";
+
 export class Database {
-// export class Database {
-  
+
   connection() {
     return mysql.createConnection({
       host: '127.0.0.1',
