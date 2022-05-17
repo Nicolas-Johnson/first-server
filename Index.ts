@@ -1,9 +1,13 @@
 import express, { Express, Request, Response } from "express";
 import { Database } from "./modules/Database";
+import { Customer } from "./modules/Customer";
+import { userInfo } from "os";
 
 const app: Express = express();
 
 const db = new Database();
+
+const customer = new Customer();
 
 app.get("/", (req: Request, res: Response) => {
 
@@ -12,8 +16,6 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.get("/accounts", async (req: Request, res: Response) => {
-
-  const connection = await db.connection();
 
   const [ rows ] = await db.command("SELECT * FROM accounttypes;");
   
@@ -24,7 +26,6 @@ app.get("/account/:id", async(req: Request, res: Response) => {
   const { id } = req.params;
 
   if (id) {
-    const connection = await db.connection();
 
     const [ rows ] = await db.command(`SELECT * FROM accounttypes WHERE id = ?;`, [id]);
 
@@ -34,9 +35,7 @@ app.get("/account/:id", async(req: Request, res: Response) => {
 
 app.get("/customers", async (req: Request, res: Response) => {
 
-  const connection = await db.connection();
-
-  const [ rows ] = await db.command("SELECT * FROM customer;");
+  const [ rows ] = await  customer.list();
   
   res.json(rows);
 
@@ -46,8 +45,6 @@ app.get("/customer/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
   if (id) {
-
-    const connection = await db.connection();
   
     const [ rows ] = await db.command(`SELECT * FROM customer WHERE id = ?;`, [id]);
   
@@ -57,8 +54,6 @@ app.get("/customer/:id", async (req: Request, res: Response) => {
 });
 
 app.get("/agencies", async (req: Request, res: Response) => {
-
-  const connection = await db.connection();
 
   const [ rows ] = await db.command("SELECT * FROM agencies;");
 
@@ -71,8 +66,6 @@ app.get("/agencie/:id", async (req: Request, res: Response) => {
 
   if (id) {
 
-    const connection = await db.connection();
-
     const [ rows ] = await db.command(`SELECT * FROM agencies WHERE id = ?;`, [id]);
 
     res.json(rows);
@@ -80,8 +73,6 @@ app.get("/agencie/:id", async (req: Request, res: Response) => {
 });
 
 app.get("/districts", async (req: Request, res: Response) => {
-
-  const connection = await db.connection();
 
   const [ rows ] = await db.command("SELECT * FROM district;");
 
@@ -92,7 +83,6 @@ app.get("/district/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
   if (id) {
-    const connection = await db.connection();
 
     const [ rows ] = await db.command(`SELECT * FROM district WHERE id = ?;`, [id]);
 
@@ -101,8 +91,6 @@ app.get("/district/:id", async (req: Request, res: Response) => {
 });
 
 app.get("/employees", async (req: Request, res: Response) => {
-
-  const connection = await db.connection();
 
   const [ rows ] = await db.command("SELECT * FROM employees;");
 
@@ -115,8 +103,6 @@ app.get("/employee/:id", async (req: Request, res: Response) => {
 
   if (id) {
 
-    const connection = await db.connection();
-
     const [ rows ] = await db.command(`SELECT * FROM employees WHERE id = ?;`, [id]);
 
     res.json(rows);
@@ -124,8 +110,6 @@ app.get("/employee/:id", async (req: Request, res: Response) => {
 });
 
 app.get("/managers", async (req: Request, res: Response) => {
-
-  const connection = await db.connection();
 
   const [ rows ] = await db.command("SELECT * FROM managers;");
 
@@ -139,8 +123,6 @@ app.get("/manager/:id", async (req: Request, res: Response) => {
 
   if (id) {
 
-    const connection = await db.connection();
-
     const [ rows ] = await db.command(`SELECT * FROM managers WHERE id = ?;`, [id]);
 
     res.json(rows);
@@ -148,8 +130,6 @@ app.get("/manager/:id", async (req: Request, res: Response) => {
 });
 
 app.get("/rules", async (req: Request, res: Response) => {
-
-  const connection = await db.connection();
 
   const [ rows ] = await db.command("SELECT * FROM rules;");
 
@@ -162,8 +142,6 @@ app.get("/rule/:id", async (req: Request, res: Response) => {
 
   if (id) {
 
-    const connection = await db.connection();
-
     const [ rows ] = await db.command(`SELECT * FROM rules WHERE id = ?;`, [id]);
 
     res.json(rows);
@@ -171,8 +149,6 @@ app.get("/rule/:id", async (req: Request, res: Response) => {
 });
 
 app.get("/services", async (req: Request, res: Response) => {
-
-  const connection = await db.connection();
 
   const [ rows ] = await db.command("SELECT * FROM services;");
 
@@ -184,7 +160,6 @@ app.get("/service/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
   if (id) {
-    const connection = await db.connection();
 
     const [ rows ] = await db.command(`SELECT * FROM services WHERE id = ?;`, [id]);
 
@@ -193,8 +168,6 @@ app.get("/service/:id", async (req: Request, res: Response) => {
 });
 
 app.get("/timetable", async (req: Request, res: Response) => {
-
-  const connection = await db.connection();
 
   const [ rows ] = await db.command("SELECT * FROM timetable;");
 
@@ -206,8 +179,6 @@ app.get("/timetable/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
   if (id) {
-
-    const connection = await db.connection();
 
     const [ rows ] = await db.command(`SELECT * FROM timetable WHERE id = ?;`, [id]);
 
@@ -221,54 +192,11 @@ app.listen(5001, () => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
-import express, { Express, Request, Response } from "express";
-import mysql from "mysql2/promise";
-import { Database } from "./classes/Database";
+M - Model
+V - View
+C - Controller
 
-const app: Express = express();
-
-const db = new Database();
-
-app.get("/", (req: Request, res: Response) => {
-
-});
-
-app.get("customers", async (req: Request, res: Response) => {
-
-  const [rows] = await db.command("SELECT * FROM customer;");
-
-  res.json(rows);
-
-});
-
-app.get("/customers/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  if (id) {
-
-    const [rows] = await db.command(`SELECT * FROM customers WHERE id = ?;` [id]);
-
-    res.json(rows);
-  }
-})
+Model - Conecta com o DB e traz algum resultado(Dados) de Lá.
+controller => Lida com informações que o usuário envia e pode realizar algum tipo de tratamento com essas infos. 
 */
