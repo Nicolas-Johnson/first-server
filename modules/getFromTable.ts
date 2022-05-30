@@ -20,7 +20,7 @@ export class GetFromTable extends Database {
     return rows;
   }
 
-  create(params: ICustomer) {
+  async create(params: ICustomer) {
 
     const { name, lastName, cpf, acountManager, acountType, agency, birthDate} = params;
 
